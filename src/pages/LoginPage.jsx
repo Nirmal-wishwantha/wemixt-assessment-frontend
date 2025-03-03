@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import instance from '../services/AxiosOder';
 
+import { Toast } from '../common/funtion';
+
 export default function LoginPage() {
 
     const navigate = useNavigate();
@@ -21,14 +23,26 @@ export default function LoginPage() {
             .then((res) => {
                 console.log(res);
                 localStorage.setItem('wemixt', res.data.data.token);
-    
+
+                Toast.fire({
+                    icon: "success",
+                    title: "Login in successfully"
+                  });
                 
                 setTimeout(() => {
                     navigate('/main'); 
                 }, 2000);
+
+                
+        
             })
             .catch((err) => {
                 console.log(err);
+
+                Toast.fire({
+                    icon: "error",
+                    title: "Login in Faild"
+                  });
                 
             });
     };

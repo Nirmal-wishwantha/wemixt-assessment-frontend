@@ -3,6 +3,7 @@ import React from "react";
 import { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import instance from "../services/AxiosOder";
+import { Toast } from "../common/funtion";
 
 
 
@@ -24,17 +25,22 @@ export default function RegisterPage() {
       alert("Passwords do not match");
       return;
     }
-  
+
     const data = {
       fullName: name,
       email: email,
       password: password
     };
-  
+
     instance
       .post("/register", data)
       .then((res) => {
         console.log(res);
+
+        Toast.fire({
+          icon: "success",
+          title: "Register in successfully"
+        });
 
         setTimeout(() => {
           navigate("/login");
@@ -44,9 +50,14 @@ export default function RegisterPage() {
 
       .catch((err) => {
         console.log(err);
+
+        Toast.fire({
+          icon: "error",
+          title: "Register in faild"
+        });
       });
   };
-  
+
 
 
 
