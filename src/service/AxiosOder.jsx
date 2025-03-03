@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// const token = localStorage.getItem('login');
+// const token = localStorage.getItem('wemixt');
 
 const instance = axios.create({
     baseURL: 'http://localhost:3000',
