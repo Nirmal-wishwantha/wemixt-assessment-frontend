@@ -17,6 +17,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
+import { Route, Routes,Link ,Navigate} from 'react-router-dom';
+import routes from '../common/navigation/routes'
+
 const drawerWidth = 240;
 
 function Home(props) {
@@ -43,9 +46,9 @@ function Home(props) {
     //routes
     const getRoutes = () =>
         routes.map((val, index) => (
-          <Route key={index} path={val.path} element={val.Element} icon={val.icon} />
+            <Route key={index} path={val.path} element={val.Element} icon={val.icon} text={val.text}/>
         ));
-        
+
 
     const drawer = (
         <div>
@@ -53,21 +56,33 @@ function Home(props) {
 
             <Divider />
 
-            <List>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                    <ListItem key={text} disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
-            </List>
-            
+            {
+                routes.map((val, index) => (
+                    <List>
+                        <Link key={index} to={val.path} style={{ textDecoration: 'none', color: 'black' }}>
 
-            
+                            <ListItem disablePadding>
+                                <ListItemButton>
+                                    <ListItemIcon>
+                                        {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                                        {val.icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={val.text} />
+                                </ListItemButton>
+                            </ListItem>
+
+                        </Link>
+
+
+                    </List>
+
+
+                ))
+            }
+
+
+
+
 
         </div>
     );
@@ -143,6 +158,7 @@ function Home(props) {
                     {drawer}
                 </Drawer>
 
+
             </Box>
 
             <Box
@@ -150,7 +166,10 @@ function Home(props) {
                 sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
             >
 
-                {/* Content */}
+                <Routes>
+                    <Route path="*" element={<Navigate to={'/members'} />} />
+                    {getRoutes()}
+                </Routes>
 
 
 
