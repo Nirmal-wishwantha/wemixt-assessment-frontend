@@ -1,5 +1,6 @@
-import Members from '../../pages/Members';
+
 import PeopleIcon from '@mui/icons-material/People';
+import Members from '../../pages/Members';
 
 
 const routes = [
@@ -7,7 +8,7 @@ const routes = [
     {
         text: "Members",
         icon: <PeopleIcon/>,
-        path: '/members',
+        path: '/Members',
         element:<Members/>
     },
 ]

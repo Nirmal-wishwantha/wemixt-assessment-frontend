@@ -17,9 +17,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-import { Route, Routes,Link ,Navigate} from 'react-router-dom';
+import { Route, Routes, Link, Navigate, useNavigate } from 'react-router-dom';
 import routes from '../common/navigation/routes'
-
+import { Button } from '@mui/material';
+import { Toast } from '../common/funtion';
 const drawerWidth = 240;
 
 function Home(props) {
@@ -46,7 +47,7 @@ function Home(props) {
     //routes
     const getRoutes = () =>
         routes.map((val, index) => (
-            <Route key={index} path={val.path} element={val.Element} icon={val.icon} text={val.text}/>
+            <Route key={index} path={val.path} element={val.Element} icon={val.icon} text={val.text} />
         ));
 
 
@@ -90,6 +91,30 @@ function Home(props) {
     // Remove this const when copying and pasting into your project.
     const container = window !== undefined ? () => window().document.body : undefined;
 
+
+
+    // log out 
+
+
+    const logOut = () => {
+        localStorage.removeItem('wemixt');
+    
+        Toast.fire({
+            icon: "success",
+            title: "Logged out successfully"
+        });
+    
+        setTimeout(() => {
+            window.location.reload(); // Ensure this is correctly spelled
+        }, 2000);
+    
+        console.log('Logged out');
+    };
+    
+    
+    
+
+
     return (
         <Box sx={{ display: 'flex' }}>
             {/* <CssBaseline /> */}
@@ -117,6 +142,8 @@ function Home(props) {
                         Responsive drawer
                     </Typography>
                 </Toolbar>
+
+
 
 
             </AppBar>
@@ -156,6 +183,11 @@ function Home(props) {
                     open
                 >
                     {drawer}
+
+                    
+                        <Button onClick={logOut}>Logout</Button>
+                    
+
                 </Drawer>
 
 
@@ -167,7 +199,7 @@ function Home(props) {
             >
 
                 <Routes>
-                    <Route path="*" element={<Navigate to={'/members'} />} />
+                    <Route path="*" element={<Navigate to={'/Members'} />} />
                     {getRoutes()}
                 </Routes>
 

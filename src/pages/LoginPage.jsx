@@ -7,10 +7,12 @@ import { Toast } from '../common/funtion';
 
 export default function LoginPage() {
 
-    const navigate = useNavigate();
+
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const navigate = useNavigate(); // Initialize useNavigate
 
     const login = () => {
         const data = {
@@ -21,32 +23,42 @@ export default function LoginPage() {
         instance
             .post('/login', data)
             .then((res) => {
-                console.log(res);
-                localStorage.setItem('wemixt', res.data.data.token);
-
-                Toast.fire({
-                    icon: "success",
-                    title: "Login in successfully"
-                  });
-                
-                setTimeout(() => {
-                    navigate('/main'); 
-                }, 2000);
-
-                
-        
+                console.log("Response Data:", res); // Log the full response
+    
+                // Correcting the token path
+                if (res.data && res.data.token) {
+                    const token = res.data.token;  // Use res.data.token instead of res.data.data.token
+                    localStorage.setItem('wemixt', token);
+    
+                    Toast.fire({
+                        icon: "success",
+                        title: "Login successfully"
+                    });
+    
+                    // Navigate to Home after successful login
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    console.error("Token not found in response:", res.data);
+                    Toast.fire({
+                        icon: "error",
+                        title: "Login failed: Invalid response"
+                    });
+                }
             })
             .catch((err) => {
-                console.log(err);
-
+                console.error("Login Error:", err);
+    
                 Toast.fire({
                     icon: "error",
-                    title: "Login in Faild"
-                  });
-                
+                    title: "Login failed"
+                });
             });
     };
     
+
+
 
     return (
         <Box

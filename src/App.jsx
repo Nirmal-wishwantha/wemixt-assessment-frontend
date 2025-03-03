@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage'
 import { Route, Routes, Navigate } from 'react-router-dom';
+import Members from './pages/Members';
 
 
 function App() {
@@ -51,6 +52,8 @@ function Main() {
   return (
     <div>
       <Home />
+
+      
     </div>
 
   )
