@@ -1,7 +1,12 @@
 import { Box, Button, TextField, Typography, Paper } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function LoginPage() {
+
+    const [email,setEmail]=useState('');
+    const[password,setPassword]=useState('');
+
+    
     return (
         <Box 
             sx={{ 
