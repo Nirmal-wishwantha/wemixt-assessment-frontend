@@ -2,6 +2,8 @@ import { Box, Button, TextField, Typography, Paper } from '@mui/material';
 import React from 'react';
 
 export default function LoginPage() {
+
+
     return (
         <Box 
             sx={{ 
@@ -9,7 +11,7 @@ export default function LoginPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center', 
-                background: 'linear-gradient(to right, #6a11cb, #2575fc)' 
+                 
             }}
         >
             <Paper 
@@ -29,6 +31,8 @@ export default function LoginPage() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <TextField label="Email" variant="outlined" fullWidth />
                     <TextField label="Password" variant="outlined" type="password" fullWidth />
+
+                    <TextField label="Conform Password" variant="outlined" type="password" fullWidth />
                     <Button 
                         variant="contained" 
                         color="primary" 
