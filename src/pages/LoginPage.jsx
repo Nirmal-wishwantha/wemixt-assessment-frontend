@@ -21,7 +21,7 @@ export default function LoginPage() {
         };
     
         instance
-            .post('/login', data)
+            .post('/users/login', data)
             .then((res) => {
                 console.log("Response Data:", res); // Log the full response
     

@@ -21,6 +21,7 @@ import MailIcon from '@mui/icons-material/Mail';
 
 import { Route, Routes, Navigate, Link } from 'react-router-dom';
 import routes from '../common/navigation/routes';
+import { Button } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -93,13 +94,17 @@ export default function Home() {
 
 
     // routs............
-
     const getRouts = () =>
         routes.map((val, index) =>
-
             <Route key={index} path={val.path} element={val.element} />
-
         )
+
+    //logout...............
+    const logOut = () => {
+        localStorage.removeItem('wemixt');
+        window.location.reload();
+    }
+
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -145,11 +150,10 @@ export default function Home() {
                 </DrawerHeader>
                 <Divider />
 
-
                 <List>
                     {
                         routes.map((val, index) => (
-                            <Link key={index} to={val.path} style={{ textDecoration: 'none',color:'black'}}>
+                            <Link key={index} to={val.path} style={{ textDecoration: 'none', color: 'black' }}>
 
                                 <ListItem disablePadding>
                                     <ListItemButton>
@@ -160,25 +164,13 @@ export default function Home() {
                                     </ListItemButton>
                                 </ListItem>
                             </Link>
-
-
-
-
                         ))
                     }
-
-
                 </List>
-
-
-
                 <Divider />
-
-
-
-
-
+                <Button onClick={logOut}>Logout</Button>
             </Drawer>
+
             <Main open={open}>
                 <DrawerHeader />
 
@@ -188,6 +180,7 @@ export default function Home() {
                 </Routes>
 
             </Main>
+
         </Box>
     );
 }

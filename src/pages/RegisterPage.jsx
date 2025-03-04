@@ -33,7 +33,7 @@ export default function RegisterPage() {
     };
 
     instance
-      .post("/register", data)
+      .post("users/register", data)
       .then((res) => {
         console.log(res);
 
