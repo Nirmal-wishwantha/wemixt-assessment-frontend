@@ -1,98 +1,165 @@
 import React, { useEffect, useState } from "react";
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Box } from "@mui/material";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Box, TextField } from "@mui/material";
 import DocumentCard from "../common/component/DocumentCard";
 import instance from "../services/AxiosOder";
+import { Toast } from "../common/funtion";
 
 const Document = () => {
     const [open, setOpen] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadedFileName, setUploadedFileName] = useState("");
     const [userId, setUserId] = useState("");
+    const [docName, setDocName] = useState("");
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [isUploading, setIsUploading] = useState(false);
 
-    // Get user ID from local storage
     useEffect(() => {
         const id = localStorage.getItem("wemixt-id");
-        setUserId(id);
+        if (id) setUserId(id);
     }, []);
 
-    // Open & Close Dialog
     const handleOpen = () => setOpen(true);
     const handleClose = () => {
         setSelectedFile(null);
+        setDocName("");
         setOpen(false);
     };
 
-    // Handle File Selection
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        setSelectedFile(file);
+        if (file && (file.type === "application/pdf" || file.type.startsWith("image/"))) {
+            setSelectedFile(file);
+        } else {
+            Toast("Only PDF and image files are supported", "error");
+        }
     };
 
-    // Handle File Upload
-    const handleUpload = () => {
-        if (!selectedFile) return;
+    const docUpload = async () => {
+        if (!selectedFile) {
+            Toast("Please select a file to upload", "error");
+            return null;
+        }
 
-        const formData = new FormData();
-        formData.append("document", selectedFile);
-        formData.append("user_id", userId);
+        try {
+            const documents = new FormData();
+            documents.append("documents", selectedFile);
 
-        instance
-            .post("/document/add", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
-            .then((res) => {
-                console.log("Upload Success:", res.data);
-                setUploadedFileName(selectedFile.name);
-                setSelectedFile(null);
-                handleClose();
-            })
-            .catch((err) => {
-                console.error("Upload Error:", err);
-            });
+            const config = {
+                headers: { "Content-Type": "multipart/form-data" },
+                onUploadProgress: (progressEvent) => {
+                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setUploadProgress(progress);
+                    setIsUploading(true);
+                }
+            };
+
+            const res = await instance.post("/api/v1/documents", documents, config);
+
+            setIsUploading(false);
+            if (res.data && res.data.document_url) {
+                return res.data.document_url;
+            } else {
+                throw new Error("Invalid response structure");
+            }
+        } catch (err) {
+            console.error("File upload failed", err);
+            Toast("File upload failed", "error");
+            setIsUploading(false);
+            return null;
+        }
+    };
+
+    const pathUpload = async (documentUrl) => {
+        if (!documentUrl || !docName.trim() || !userId) {
+            Toast("Missing required data", "error");
+            return;
+        }
+
+        const data = {
+            userId: userId,
+            document_url: documentUrl,
+            documentName: docName,
+        };
+
+        try {
+            await instance.post("/api/v1/add", data);
+            Toast("Document uploaded successfully", "success");
+            handleClose();
+        } catch (err) {
+            console.error("Error storing document details", err);
+            Toast("Failed to save document", "error");
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!selectedFile) {
+            Toast("Please select a file first", "error");
+            return;
+        }
+
+        const documentUrl = await docUpload();
+        if (documentUrl) {
+            await pathUpload(documentUrl);
+        }
     };
 
     return (
         <Box>
             <Box textAlign="center">
-                {/* Upload Button */}
                 <Button variant="contained" color="primary" onClick={handleOpen}>
                     Upload Document
                 </Button>
 
-                {/* Show Uploaded Document Name */}
-                {uploadedFileName && (
-                    <Typography mt={2} color="textSecondary">
-                        Uploaded: {uploadedFileName}
-                    </Typography>
-                )}
-
-                {/* Upload Dialog */}
                 <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
                     <DialogTitle>Upload Document</DialogTitle>
-                    <DialogContent>
-                        <input type="file" accept=".pdf, image/*" onChange={handleFileChange} />
 
-                        {/* Preview Document */}
+                    <DialogContent sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                        <TextField
+                            label="Document Name"
+                            sx={{ margin: 2 }}
+                            value={docName}
+                            onChange={(e) => setDocName(e.target.value)}
+                        />
+
+                        <input
+                            type="file"
+                            accept=".pdf, image/*"
+                            onChange={handleFileChange}
+                            style={{ marginTop: 2 }}
+                        />
+
                         {selectedFile && (
                             <Box mt={2}>
                                 <Typography variant="body1">Selected: {selectedFile.name}</Typography>
                                 {selectedFile.type.startsWith("image/") ? (
-                                    <img src={URL.createObjectURL(selectedFile)} alt="Preview" width="100%" style={{ marginTop: "10px" }} />
+                                    <img
+                                        src={URL.createObjectURL(selectedFile)}
+                                        alt="Preview"
+                                        width="100%"
+                                        style={{ marginTop: "10px" }}
+                                    />
                                 ) : selectedFile.type === "application/pdf" ? (
-                                    <embed src={URL.createObjectURL(selectedFile)} type="application/pdf" width="100%" height="200px" />
+                                    <embed
+                                        src={URL.createObjectURL(selectedFile)}
+                                        type="application/pdf"
+                                        width="100%"
+                                        height="200px"
+                                    />
                                 ) : null}
+
+                                {isUploading && (
+                                    <Typography variant="body2" color="textSecondary" component="p" gutterBottom>
+                                        Uploading... ({uploadProgress}%)
+                                    </Typography>
+                                )}
                             </Box>
                         )}
                     </DialogContent>
 
-                    {/* Upload & Close Buttons */}
                     <DialogActions>
                         <Button onClick={handleClose} color="secondary">
                             Cancel
                         </Button>
-                        <Button onClick={handleUpload} color="primary" disabled={!selectedFile}>
+                        <Button onClick={handleUpload} color="primary" disabled={!selectedFile || isUploading}>
                             Upload
                         </Button>
                     </DialogActions>

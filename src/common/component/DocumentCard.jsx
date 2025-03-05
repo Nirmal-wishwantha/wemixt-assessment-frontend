@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Card, CardContent } from '@mui/material';
+import { Box, Typography, Card, CardContent, IconButton } from '@mui/material';
+import DownloadIcon from '@mui/icons-material/Download';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import instance from '../../services/AxiosOder';
-import { Worker, Viewer } from '@react-pdf-viewer/core';
-import '@react-pdf-viewer/core/lib/styles/index.css';
 import docu from '../../assets/Daily Report Draft 3,03.pdf';
-import { pdfjs } from 'reat-pdf';
+import { Toast } from '../funtion';
 
-// Configure the workerSrc globally
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 export default function DocumentCard() {
     const [userId, setUserId] = useState('');
+
     const [documents, setDocuments] = useState([]);
     const [selectedDocument, setSelectedDocument] = useState(null);
 
@@ -27,29 +29,73 @@ export default function DocumentCard() {
         }
     }, [userId]);
 
+
+
     const getDocument = () => {
         instance
-            .get(`/document/user/${userId}`)
+            .get(`/get/${userId}`)
+
             .then((res) => {
-                console.log('Fetched Documents:', res.data);
-                setDocuments(res.data);
+                console.log('Fetched Documents:', res.data.documents);
+                setDocuments(res.data.documents);
             })
             .catch((err) => {
                 console.error('Error fetching documents:', err);
             });
     };
 
-    const document = [
-        {
-            fileName: 'Resume',
-            uploadDate: '2024-05-08',
-            filePath: docu,
-        },
-    ];
+    const handleDownloadClick = (filePath) => {
 
-    const handleDocumentClick = (filePath) => {
-        setSelectedDocument(filePath);
+        const link = document.createElement('a');
+        link.href = filePath;
+        link.download = filePath.split('/').pop();
+        link.click();
+
+        Toast.fire({
+            icon: 'success',
+            title: 'Download successful',
+        });
     };
+
+    // view
+    const handleViewClick = (filePath) => {
+        window.open(filePath, '_blank');
+    };
+
+    //delete
+    const deleteDoc = (id) => {
+        instance.delete(`/${id}`)
+            .then((res) => {
+                console.log(res);
+                getDocument();
+
+                Toast.fire({
+                    icon: "success",
+                    title: "Deleted"
+                });
+                console.log('delete succes full')
+            })
+            .catch((err) => {
+                console.log(err);
+
+                Toast.fire({
+                    icon: "success",
+                    title: " Delete Faild"
+                });
+
+            })
+    }
+
+
+    const uplodDoc = () => {
+        instance.post('/documents',)
+    }
+    const updateDoc = () => {
+        instance.put()
+    }
+
+
+
 
     return (
         <Box>
@@ -57,18 +103,68 @@ export default function DocumentCard() {
                 Uploaded Documents
             </Typography>
 
-            {document.length > 0 ? (
-                document.map((doc, index) => (
-                    <Card
-                        key={index}
-                        sx={{ margin: 2, padding: 2, boxShadow: 3 }}
-                        onClick={() => handleDocumentClick(doc.filePath)}
-                    >
+            {documents.length > 0 ? (
+                documents.map((doc, index) => (
+                    <Card key={index} sx={{ margin: 2, padding: 2, boxShadow: 3 }}>
                         <CardContent>
-                            <Typography variant="body1">{doc.fileName}</Typography>
+                            <Typography variant="body1">{doc.documentName}</Typography>
                             <Typography variant="body2" color="textSecondary">
                                 Uploaded: {new Date(doc.uploadDate).toLocaleString()}
                             </Typography>
+
+
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+
+                                {/* downlod */}
+                                <IconButton
+                                    sx={{
+                                        color: 'blue',
+                                        '&:hover': { backgroundColor: 'blue', color: 'white' },
+
+                                    }}
+                                    onClick={() => handleDownloadClick(doc.documentPath)}
+                                >
+                                    <DownloadIcon />
+                                </IconButton>
+
+                                {/* view */}
+                                <IconButton
+                                    sx={{
+                                        color: 'green',
+                                        '&:hover': { backgroundColor: 'green', color: 'white' },
+
+                                    }}
+                                    onClick={() => handleViewClick(doc.documentPath)}
+                                >
+                                    <VisibilityIcon />
+                                </IconButton>
+
+
+                                {/* update */}
+                                {/* <IconButton
+                                    sx={{
+                                        color: 'black',
+                                        '&:hover': { backgroundColor: 'black', color: 'white' },
+
+                                    }}
+                                onClick={() => handleViewClick(doc.documentPath)}
+                                >
+                                    <EditIcon />
+                                </IconButton> */}
+
+                                {/* delete */}
+                                <IconButton
+                                    sx={{
+                                        color: 'red',
+                                        '&:hover': { backgroundColor: 'red', color: 'white' },
+
+                                    }}
+                                    onClick={() => deleteDoc(doc.id)}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+
+                            </Box>
                         </CardContent>
                     </Card>
                 ))
@@ -76,17 +172,6 @@ export default function DocumentCard() {
                 <Typography sx={{ textAlign: 'center', mt: 2 }} color="textSecondary">
                     No documents uploaded yet.
                 </Typography>
-            )}
-
-            {selectedDocument && (
-                <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h6" sx={{ textAlign: 'center' }}>
-                        PDF Preview
-                    </Typography>
-                    <div style={{ width: '100%', height: '600px' }}>
-                        <Viewer fileUrl={selectedDocument} />
-                    </div>
-                </Box>
             )}
         </Box>
     );
