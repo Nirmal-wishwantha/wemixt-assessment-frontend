@@ -2,6 +2,8 @@
 import PeopleIcon from '@mui/icons-material/People';
 import Members from '../../pages/Members';
 import MemberForm from '../../pages/MemberForm';
+import Document from '../../pages/Document';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 
 const routes = [
@@ -18,6 +20,13 @@ const routes = [
         icon: <PeopleIcon/>,
         path: '/MembersForm',
         element:<MemberForm/>
+    },
+
+    {
+        text: "Document",
+        icon: <AssignmentIcon/>,
+        path: '/Document',
+        element:<Document/>
     },
 
 

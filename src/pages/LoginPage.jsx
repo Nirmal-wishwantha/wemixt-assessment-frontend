@@ -23,12 +23,16 @@ export default function LoginPage() {
         instance
             .post('/users/login', data)
             .then((res) => {
-                console.log("Response Data:", res); // Log the full response
+                console.log("Response Data:", res);
     
-                // Correcting the token path
+                
                 if (res.data && res.data.token) {
-                    const token = res.data.token;  // Use res.data.token instead of res.data.data.token
+                    const token = res.data.token;
+                    const id = res.data.user.id;  
+                    console.log(id);
+                    
                     localStorage.setItem('wemixt', token);
+                    localStorage.setItem('wemixt-id',id);
     
                     Toast.fire({
                         icon: "success",
