@@ -1,16 +1,57 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardMedia, Typography, Box, Button } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Box, Button, TextField } from "@mui/material";
 import instance from "../../services/AxiosOder";
-import { Toast } from "../funtion";
-import MemberUpdateForm from "./MemberUpadateForm";
 
-const MemberCard = ({ user ,onDelete}) => {
+// Function to convert ISO date to YYYY-MM-DD format
+const convertToDateOnly = (isoString) => {
+  if (!isoString) return ""; // Handle empty or undefined values
+  const date = new Date(isoString);
+  return date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
+};
 
+const MemberCard = ({ user, onDelete, onUpdate }) => {
+  const [fullName, setFullName] = useState(user.fullName || "");
+  const [email, setEmail] = useState(user.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || "");
+  const [address, setAddress] = useState(user.address || "");
+  const [dateOfBirth, setDateOfBirth] = useState(convertToDateOnly(user.dateOfBirth) || "");
+  const [gender, setGender] = useState(user.gender || "");
+  const [bio, setBio] = useState(user.bio || "");
 
-  
-  const handleUpdate = (updatedData) => {
-    console.log(updatedData); 
-    
+  // Handle Update Logic
+  const handleUpdate = (id) => {
+    const data = {
+      fullName,
+      email,
+      phoneNumber,
+      address,
+      dateOfBirth, 
+      gender,
+      bio,
+    };
+
+    instance
+      .put(`/members/${id}`, data)
+      .then((res) => {
+        console.log("Updated successfully", res.data);
+
+        // Ensure the UI updates by resetting state
+        setFullName(res.data.fullName);
+        setEmail(res.data.email);
+        setPhoneNumber(res.data.phoneNumber);
+        setAddress(res.data.address);
+        setDateOfBirth(convertToDateOnly(res.data.dateOfBirth));
+        setGender(res.data.gender);
+        setBio(res.data.bio);
+
+        // Trigger the parent to refresh the list
+        if (onUpdate) {
+          onUpdate();
+        }
+      })
+      .catch((err) => {
+        console.error("Update failed", err);
+      });
   };
 
   return (
@@ -23,39 +64,35 @@ const MemberCard = ({ user ,onDelete}) => {
         alt="Profile Picture"
         sx={{ objectFit: "cover" }}
       />
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          {user.fullName}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Email:</strong> {user.email}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Phone:</strong> {user.phoneNumber}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Address:</strong> {user.address}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Date of Birth:</strong> {user.dateOfBirth}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Gender:</strong> {user.gender}
-        </Typography>
+      <CardContent sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+
+        <TextField value={fullName} onChange={(e) => setFullName(e.target.value)} label="Full Name" sx={{margin:2}}/>
+        <TextField value={email} onChange={(e) => setEmail(e.target.value)} label="Email" sx={{margin:2}}/>
+        <TextField value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} label="Phone Number"sx={{margin:2}} />
+        <TextField value={address} onChange={(e) => setAddress(e.target.value)} label="Address" sx={{margin:2}} />
+        <TextField
+          value={dateOfBirth}
+          onChange={(e) => setDateOfBirth(e.target.value)}
+          label="Date of Birth"
+          type="date"
+          sx={{margin:2}}
+          // InputLabelProps={{ shrink: true }} 
+        />
+        <TextField value={gender} onChange={(e) => setGender(e.target.value)} label="Gender" sx={{margin:2}}/>
+
         <Box mt={2}>
-          <Typography variant="body2" color="text.secondary">
-            <strong>Bio:</strong> {user.bio}
-          </Typography>
+          <TextField rows={5} multiline value={bio} onChange={(e) => setBio(e.target.value)} label="Bio" sx={{margin:2,width:'90%'}} />
         </Box>
+
       </CardContent>
 
       <Box sx={{ display: "flex", justifyContent: "space-between", padding: 2 }}>
         <Button variant="contained" color="error" onClick={onDelete}>
           Delete
         </Button>
-        
-        <MemberUpdateForm member={user} onUpdate={handleUpdate} />
-        
+        <Button variant="contained" color="primary" onClick={() => handleUpdate(user.id)}>
+          Update
+        </Button>
       </Box>
     </Card>
   );
