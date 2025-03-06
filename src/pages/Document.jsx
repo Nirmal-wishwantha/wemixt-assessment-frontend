@@ -6,11 +6,12 @@ import { Toast } from "../common/funtion";
 
 const Document = () => {
     const [open, setOpen] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
     const [userId, setUserId] = useState("");
     const [docName, setDocName] = useState("");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [url, setUrl] = useState('');
 
     useEffect(() => {
         const id = localStorage.getItem("wemixt-id");
@@ -33,73 +34,56 @@ const Document = () => {
         }
     };
 
-    const docUpload = async () => {
-        if (!selectedFile) {
-            Toast("Please select a file to upload", "error");
-            return null;
-        }
+    // Upload document with progress tracking
+    const docUpload = () => {
+        const formData = new FormData();
+        formData.append('documents', selectedFile);
 
-        try {
-            const documents = new FormData();
-            documents.append("documents", selectedFile);
-
-            const config = {
-                headers: { "Content-Type": "multipart/form-data" },
-                onUploadProgress: (progressEvent) => {
+        setIsUploading(true);  // Set uploading state to true
+        instance.post('/documents', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+            },
+            onUploadProgress: (progressEvent) => {
+                if (progressEvent.total) {
                     const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                     setUploadProgress(progress);
-                    setIsUploading(true);
                 }
-            };
-
-            const res = await instance.post("/api/v1/documents", documents, config);
-
-            setIsUploading(false);
-            if (res.data && res.data.document_url) {
-                return res.data.document_url;
-            } else {
-                throw new Error("Invalid response structure");
             }
-        } catch (err) {
-            console.error("File upload failed", err);
-            Toast("File upload failed", "error");
-            setIsUploading(false);
-            return null;
-        }
+        })
+            .then((res) => {
+                setUrl(res.data.document_url);  // Set URL after upload
+            })
+            .catch((err) => {
+                console.error(err);
+                setIsUploading(false); // Reset uploading state in case of error
+            });
     };
 
-    const pathUpload = async (documentUrl) => {
-        if (!documentUrl || !docName.trim() || !userId) {
-            Toast("Missing required data", "error");
-            return;
+    // Trigger pathSaveDatabase when URL is set
+    useEffect(() => {
+        if (url) {
+            pathSavaDatabase();
         }
+    }, [url]);
 
+    // Save document path to the database
+    const pathSavaDatabase = () => {
         const data = {
             userId: userId,
-            document_url: documentUrl,
+            filename: url,
             documentName: docName,
         };
-
-        try {
-            await instance.post("/api/v1/add", data);
-            Toast("Document uploaded successfully", "success");
-            handleClose();
-        } catch (err) {
-            console.error("Error storing document details", err);
-            Toast("Failed to save document", "error");
-        }
-    };
-
-    const handleUpload = async () => {
-        if (!selectedFile) {
-            Toast("Please select a file first", "error");
-            return;
-        }
-
-        const documentUrl = await docUpload();
-        if (documentUrl) {
-            await pathUpload(documentUrl);
-        }
+        instance.post('/add', data)
+            .then((res) => {
+                console.log(res.data);
+                window.location.reload();
+                
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     return (
@@ -159,7 +143,7 @@ const Document = () => {
                         <Button onClick={handleClose} color="secondary">
                             Cancel
                         </Button>
-                        <Button onClick={handleUpload} color="primary" disabled={!selectedFile || isUploading}>
+                        <Button onClick={docUpload} color="primary" disabled={!selectedFile || isUploading}>
                             Upload
                         </Button>
                     </DialogActions>
@@ -167,7 +151,7 @@ const Document = () => {
             </Box>
 
             <Box>
-                <DocumentCard />
+                <DocumentCard/>
             </Box>
         </Box>
     );

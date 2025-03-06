@@ -87,12 +87,7 @@ export default function DocumentCard() {
     }
 
 
-    const uplodDoc = () => {
-        instance.post('/documents',)
-    }
-    const updateDoc = () => {
-        instance.put()
-    }
+  
 
 
 

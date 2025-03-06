@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardMedia, Typography, Box, Button, TextField } from "@mui/material";
+import { Card, CardContent, CardMedia, Box, Button, TextField } from "@mui/material";
 import instance from "../../services/AxiosOder";
+import { Toast } from "../funtion";
 
 // Function to convert ISO date to YYYY-MM-DD format
 const convertToDateOnly = (isoString) => {
@@ -25,7 +26,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
       email,
       phoneNumber,
       address,
-      dateOfBirth, 
+      dateOfBirth,
       gender,
       bio,
     };
@@ -44,13 +45,24 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
         setGender(res.data.gender);
         setBio(res.data.bio);
 
+        Toast.fire({
+          icon: "success",
+          title: "update successfully"
+        });
         // Trigger the parent to refresh the list
         if (onUpdate) {
           onUpdate();
+          window.location.reload();
         }
       })
       .catch((err) => {
         console.error("Update failed", err);
+
+        
+        Toast.fire({
+          icon: "error",
+          title: "update Faild"
+        });
       });
   };
 
@@ -65,25 +77,79 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
         sx={{ objectFit: "cover" }}
       />
       <CardContent sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-
-        <TextField value={fullName} onChange={(e) => setFullName(e.target.value)} label="Full Name" sx={{margin:2}}/>
-        <TextField value={email} onChange={(e) => setEmail(e.target.value)} label="Email" sx={{margin:2}}/>
-        <TextField value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} label="Phone Number"sx={{margin:2}} />
-        <TextField value={address} onChange={(e) => setAddress(e.target.value)} label="Address" sx={{margin:2}} />
+        <TextField value={fullName} onChange={(e) => setFullName(e.target.value)} label="Full Name" sx={{ margin: 2 }} slotProps={{
+          inputLabel: {
+            shrink: true,
+          },
+        }} />
+        <TextField value={email} onChange={(e) => setEmail(e.target.value)} label="Email" sx={{ margin: 2 }} slotProps={{
+          inputLabel: {
+            shrink: true,
+          },
+        }} />
+        <TextField value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} label="Phone Number" sx={{ margin: 2 }} slotProps={{
+          inputLabel: {
+            shrink: true,
+          },
+        }} />
+        <TextField value={address} onChange={(e) => setAddress(e.target.value)} label="Address" sx={{ margin: 2 }} slotProps={{
+          inputLabel: {
+            shrink: true,
+          },
+        }} />
         <TextField
           value={dateOfBirth}
           onChange={(e) => setDateOfBirth(e.target.value)}
           label="Date of Birth"
           type="date"
-          sx={{margin:2}}
-          // InputLabelProps={{ shrink: true }} 
+          sx={{ margin: 2 }}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
         />
-        <TextField value={gender} onChange={(e) => setGender(e.target.value)} label="Gender" sx={{margin:2}}/>
+
+
+
+        <TextField
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+          label="Gender"
+          sx={{ margin: 2 }}
+          select // Enable the dropdown functionality
+          SelectProps={{
+            native: true, // Use the native select element for better performance
+          }}
+          slotProps={{
+            inputLabel: {
+              shrink: true, // Keeps the label at the top
+            },
+          }}
+        >
+          {/* Gender Options */}
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </TextField>
+
 
         <Box mt={2}>
-          <TextField rows={5} multiline value={bio} onChange={(e) => setBio(e.target.value)} label="Bio" sx={{margin:2,width:'90%'}} />
+          <TextField
+            rows={5}
+            multiline
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            label="Bio"
+            sx={{ margin: 2, width: '90%' }}
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+          />
         </Box>
-
       </CardContent>
 
       <Box sx={{ display: "flex", justifyContent: "space-between", padding: 2 }}>

@@ -27,7 +27,8 @@ export default function Members() {
     instance.delete(`/members/${id}`)
       .then((res) => {
 
-        window.location.reload();
+       
+        memberGet();
         console.log('Delete successful:', res);
         Toast.fire({
           icon: "success",
