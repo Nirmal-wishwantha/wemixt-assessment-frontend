@@ -1,189 +1,186 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
-import AppBar from '@mui/material/AppBar';
+import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
+import CssBaseline from '@mui/material/CssBaseline';
+import MuiAppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import MenuIcon from '@mui/icons-material/Menu';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 
-import { Route, Routes,Link ,Navigate} from 'react-router-dom';
-import routes from '../common/navigation/routes'
+import { Route, Routes, Navigate, Link } from 'react-router-dom';
+import routes from '../common/navigation/routes';
+import { Button } from '@mui/material';
 
 const drawerWidth = 240;
 
-function Home(props) {
-    const { window } = props;
-    const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [isClosing, setIsClosing] = React.useState(false);
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+    ({ theme }) => ({
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: `-${drawerWidth}px`,
+        variants: [
+            {
+                props: ({ open }) => open,
+                style: {
+                    transition: theme.transitions.create('margin', {
+                        easing: theme.transitions.easing.easeOut,
+                        duration: theme.transitions.duration.enteringScreen,
+                    }),
+                    marginLeft: 0,
+                },
+            },
+        ],
+    }),
+);
+
+const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    variants: [
+        {
+            props: ({ open }) => open,
+            style: {
+                width: `calc(100% - ${drawerWidth}px)`,
+                marginLeft: `${drawerWidth}px`,
+                transition: theme.transitions.create(['margin', 'width'], {
+                    easing: theme.transitions.easing.easeOut,
+                    duration: theme.transitions.duration.enteringScreen,
+                }),
+            },
+        },
+    ],
+}));
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+}));
+
+export default function Home() {
+    const theme = useTheme();
+    const [open, setOpen] = React.useState(false);
+
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
 
     const handleDrawerClose = () => {
-        setIsClosing(true);
-        setMobileOpen(false);
-    };
-
-    const handleDrawerTransitionEnd = () => {
-        setIsClosing(false);
-    };
-
-    const handleDrawerToggle = () => {
-        if (!isClosing) {
-            setMobileOpen(!mobileOpen);
-        }
+        setOpen(false);
     };
 
 
-    //routes
-    const getRoutes = () =>
-        routes.map((val, index) => (
-            <Route key={index} path={val.path} element={val.Element} icon={val.icon} text={val.text}/>
-        ));
+    // routs............
+    const getRouts = () =>
+        routes.map((val, index) =>
+            <Route key={index} path={val.path} element={val.element} />
+        )
 
+    //logout...............
+    const logOut = () => {
+        localStorage.removeItem('wemixt');
+        window.location.reload();
+    }
 
-    const drawer = (
-        <div>
-            <Toolbar />
-
-            <Divider />
-
-            {
-                routes.map((val, index) => (
-                    <List>
-                        <Link key={index} to={val.path} style={{ textDecoration: 'none', color: 'black' }}>
-
-                            <ListItem disablePadding>
-                                <ListItemButton>
-                                    <ListItemIcon>
-                                        {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                                        {val.icon}
-                                    </ListItemIcon>
-                                    <ListItemText primary={val.text} />
-                                </ListItemButton>
-                            </ListItem>
-
-                        </Link>
-
-
-                    </List>
-
-
-                ))
-            }
-
-
-
-
-
-        </div>
-    );
-
-    // Remove this const when copying and pasting into your project.
-    const container = window !== undefined ? () => window().document.body : undefined;
 
     return (
         <Box sx={{ display: 'flex' }}>
-            {/* <CssBaseline /> */}
-
-            <AppBar
-                position="fixed"
-                sx={{
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
-                    ml: { sm: `${drawerWidth}px` },
-                }}
-            >
-
-
+            <CssBaseline />
+            <AppBar position="fixed" open={open}>
                 <Toolbar>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
+                        onClick={handleDrawerOpen}
                         edge="start"
-                        onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: 'none' } }}
+                        sx={[
+                            {
+                                mr: 2,
+                            },
+                            open && { display: 'none' },
+                        ]}
                     >
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Responsive drawer
+                        Persistent drawer
                     </Typography>
                 </Toolbar>
-
-
             </AppBar>
-
-            <Box
-                component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-                aria-label="mailbox folders"
+            <Drawer
+                sx={{
+                    width: drawerWidth,
+                    flexShrink: 0,
+                    '& .MuiDrawer-paper': {
+                        width: drawerWidth,
+                        boxSizing: 'border-box',
+                    },
+                }}
+                variant="persistent"
+                anchor="left"
+                open={open}
             >
+                <DrawerHeader>
+                    <IconButton onClick={handleDrawerClose}>
+                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    </IconButton>
+                </DrawerHeader>
+                <Divider />
 
-                {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-                <Drawer
-                    container={container}
-                    variant="temporary"
-                    open={mobileOpen}
-                    onTransitionEnd={handleDrawerTransitionEnd}
-                    onClose={handleDrawerClose}
-                    sx={{
-                        display: { xs: 'block', sm: 'none' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-                    }}
-                    slotProps={{
-                        root: {
-                            keepMounted: true, // Better open performance on mobile.
-                        },
-                    }}
-                >
-                    {drawer}
-                </Drawer>
+                <List>
+                    {
+                        routes.map((val, index) => (
+                            <Link key={index} to={val.path} style={{ textDecoration: 'none', color: 'black' }}>
 
-                <Drawer
-                    variant="permanent"
-                    sx={{
-                        display: { xs: 'none', sm: 'block' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-                    }}
-                    open
-                >
-                    {drawer}
-                </Drawer>
+                                <ListItem disablePadding>
+                                    <ListItemButton>
+                                        <ListItemIcon>
+                                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                        </ListItemIcon>
+                                        <ListItemText primary={val.text} />
+                                    </ListItemButton>
+                                </ListItem>
+                            </Link>
+                        ))
+                    }
+                </List>
+                <Divider />
+                <Button onClick={logOut}>Logout</Button>
+            </Drawer>
 
-
-            </Box>
-
-            <Box
-                component="main"
-                sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
-            >
+            <Main open={open}>
+                <DrawerHeader />
 
                 <Routes>
-                    <Route path="*" element={<Navigate to={'/members'} />} />
-                    {getRoutes()}
+                    <Route path='*' element={<Navigate to={'/Members'} />} />
+                    {getRouts()}
                 </Routes>
 
+            </Main>
 
-
-            </Box>
         </Box>
     );
 }
-
-Home.propTypes = {
-    /**
-     * Injected by the documentation to work in an iframe.
-     * Remove this when copying and pasting into your project.
-     */
-    window: PropTypes.func,
-};
-
-export default Home;
