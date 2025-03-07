@@ -23,6 +23,8 @@ import { Route, Routes, Navigate, Link } from 'react-router-dom';
 import routes from '../common/navigation/routes';
 import { Button } from '@mui/material';
 import { Toast } from '../common/funtion';
+import Profile from '../common/component/Profile';
+
 
 const drawerWidth = 240;
 
@@ -121,25 +123,32 @@ export default function Home() {
             <CssBaseline />
 
             <AppBar position="fixed" open={open}>
+
                 <Toolbar>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
-                        sx={[
-                            {
-                                mr: 2,
-                            },
-                            open && { display: 'none' },
-                        ]}
+                        sx={[{ mr: 2 }, open && { display: 'none' }]}
                     >
                         <MenuIcon />
                     </IconButton>
+
                     <Typography variant="h6" noWrap component="div">
                         User management System
                     </Typography>
+
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', flexGrow: 1 }}>
+                        <Profile />
+                    </Box>
+
+
                 </Toolbar>
+
+
+
             </AppBar>
 
 

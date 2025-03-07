@@ -47,7 +47,7 @@ export default function Members() {
   return (
     <Box sx={{ display: "flex", flexWrap: 'wrap' }}>
       {allUser.map((user, index) => (
-        <Box key={index} sx={{ margin: 2 }}>
+        <Box key={index} sx={{ margin: 1 }}>
           <MemberCard user={user} onDelete={() => deleteUser(user.id)} />
         </Box>
       ))}

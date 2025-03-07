@@ -86,8 +86,8 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
 
         if (onUpdate) {
           onUpdate();
-          window.location.reload();
         }
+        window.location.reload();
       })
       .catch((err) => {
         console.error("Update failed", err);
@@ -127,7 +127,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
 
       <CardContent sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <TextField
-          value={fullName}
+          value={fullName || ''}
           onChange={(e) => setFullName(e.target.value)}
           label="Full Name"
           sx={{ margin: 2 }}
@@ -138,7 +138,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
           }}
         />
         <TextField
-          value={email}
+          value={email || ''}
           onChange={(e) => setEmail(e.target.value)}
           label="Email"
           sx={{ margin: 2 }}
@@ -149,7 +149,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
           }}
         />
         <TextField
-          value={phoneNumber}
+          value={phoneNumber || ''}
           onChange={(e) => setPhoneNumber(e.target.value)}
           label="Phone Number"
           sx={{ margin: 2 }}
@@ -160,7 +160,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
           }}
         />
         <TextField
-          value={address}
+          value={address || ''}
           onChange={(e) => setAddress(e.target.value)}
           label="Address"
           sx={{ margin: 2 }}
@@ -171,7 +171,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
           }}
         />
         <TextField
-          value={dateOfBirth}
+          value={dateOfBirth || ''}
           onChange={(e) => setDateOfBirth(e.target.value)}
           label="Date of Birth"
           type="date"
@@ -183,7 +183,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
           }}
         />
         <TextField
-          value={gender}
+          value={gender || ''}
           onChange={(e) => setGender(e.target.value)}
           label="Gender"
           sx={{ margin: 2 }}
@@ -207,7 +207,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
           <TextField
             rows={5}
             multiline
-            value={bio}
+            value={bio || ''}
             onChange={(e) => setBio(e.target.value)}
             label="Bio"
             sx={{ margin: 2, width: "90%" }}
