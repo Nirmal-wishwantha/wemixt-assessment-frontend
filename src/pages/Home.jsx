@@ -109,6 +109,7 @@ export default function Home() {
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
+
             <AppBar position="fixed" open={open}>
                 <Toolbar>
                     <IconButton
@@ -126,10 +127,12 @@ export default function Home() {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Persistent drawer
+                        User management System
                     </Typography>
                 </Toolbar>
             </AppBar>
+
+
             <Drawer
                 sx={{
                     width: drawerWidth,
@@ -168,8 +171,12 @@ export default function Home() {
                     }
                 </List>
                 <Divider />
+
+
+                
                 <Button onClick={logOut}>Logout</Button>
             </Drawer>
+
 
             <Main open={open}>
                 <DrawerHeader />

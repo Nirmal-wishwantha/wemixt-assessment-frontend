@@ -6,7 +6,6 @@ import instance from '../../services/AxiosOder';
 import docu from '../../assets/Daily Report Draft 3,03.pdf';
 import { Toast } from '../funtion';
 
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
@@ -14,7 +13,7 @@ export default function DocumentCard() {
     const [userId, setUserId] = useState('');
 
     const [documents, setDocuments] = useState([]);
-    const [selectedDocument, setSelectedDocument] = useState(null);
+    
 
     useEffect(() => {
         const storedId = localStorage.getItem('wemixt-id');
@@ -45,17 +44,42 @@ export default function DocumentCard() {
     };
 
     const handleDownloadClick = (filePath) => {
-
-        const link = document.createElement('a');
-        link.href = filePath;
-        link.download = filePath.split('/').pop();
-        link.click();
-
-        Toast.fire({
-            icon: 'success',
-            title: 'Download successful',
-        });
+        console.log(filePath);
+    
+        // Fetch the file as a Blob
+        fetch(filePath)
+            .then((response) => response.blob())
+            .then((blob) => {
+                // Create a URL for the Blob
+                const url = window.URL.createObjectURL(blob);
+                
+                // Create an anchor tag dynamically
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filePath.split('/').pop(); // Set the filename to the last part of the path
+                
+                // Programmatically trigger the click event to start the download
+                link.click();
+                
+                // Clean up the created URL object
+                window.URL.revokeObjectURL(url);
+                
+                // Show success Toast
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Download successful',
+                });
+            })
+            .catch((error) => {
+                console.error('Download failed', error);
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Download failed',
+                });
+            });
     };
+    
+    
 
     // view
     const handleViewClick = (filePath) => {
@@ -85,10 +109,6 @@ export default function DocumentCard() {
 
             })
     }
-
-
-  
-
 
 
 
@@ -135,17 +155,6 @@ export default function DocumentCard() {
                                 </IconButton>
 
 
-                                {/* update */}
-                                {/* <IconButton
-                                    sx={{
-                                        color: 'black',
-                                        '&:hover': { backgroundColor: 'black', color: 'white' },
-
-                                    }}
-                                onClick={() => handleViewClick(doc.documentPath)}
-                                >
-                                    <EditIcon />
-                                </IconButton> */}
 
                                 {/* delete */}
                                 <IconButton

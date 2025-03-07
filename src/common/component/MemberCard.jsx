@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardMedia, Box, Button, TextField } from "@mui/material";
 import instance from "../../services/AxiosOder";
 import { Toast } from "../funtion";
+import { useEffect } from "react";
 
 // Function to convert ISO date to YYYY-MM-DD format
 const convertToDateOnly = (isoString) => {
@@ -18,6 +19,10 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
   const [dateOfBirth, setDateOfBirth] = useState(convertToDateOnly(user.dateOfBirth) || "");
   const [gender, setGender] = useState(user.gender || "");
   const [bio, setBio] = useState(user.bio || "");
+
+
+  // useEffect = (() => {  }, [user])
+
 
   // Handle Update Logic
   const handleUpdate = (id) => {
@@ -58,7 +63,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
       .catch((err) => {
         console.error("Update failed", err);
 
-        
+
         Toast.fire({
           icon: "error",
           title: "update Faild"
@@ -72,7 +77,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
         component="img"
         height="200"
         width="200"
-        image={user.profilePicture ? `http://localhost:3000/images/${user.profilePicture}` : "/default-profile.png"}
+        image={user.profilePicture}
         alt="Profile Picture"
         sx={{ objectFit: "cover" }}
       />
