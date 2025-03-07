@@ -12,7 +12,7 @@ export default function Members() {
     const id = localStorage.getItem('wemixt-id');
     if (id) {
       setUserId(id);
-      memberGet(id); // Call memberGet after setting userId
+      memberGet(id); 
     }
   }, []);
 
@@ -20,7 +20,7 @@ export default function Members() {
     try {
       const response = await instance.get(`/members/${id}`);
       setAllUser(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (err) {
       console.error('Error fetching users:', err);
     }

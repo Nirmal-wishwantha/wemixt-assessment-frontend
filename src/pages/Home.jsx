@@ -22,6 +22,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import { Route, Routes, Navigate, Link } from 'react-router-dom';
 import routes from '../common/navigation/routes';
 import { Button } from '@mui/material';
+import { Toast } from '../common/funtion';
 
 const drawerWidth = 240;
 
@@ -102,7 +103,16 @@ export default function Home() {
     //logout...............
     const logOut = () => {
         localStorage.removeItem('wemixt');
-        window.location.reload();
+
+        Toast.fire({
+            icon: "success",
+            title: "LogOut succesfull"
+        });
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+
     }
 
 
@@ -173,7 +183,7 @@ export default function Home() {
                 <Divider />
 
 
-                
+
                 <Button onClick={logOut}>Logout</Button>
             </Drawer>
 
