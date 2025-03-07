@@ -29,7 +29,7 @@ export default function Members() {
   const deleteUser = (id) => {
     instance.delete(`/members/${id}`)
       .then((res) => {
-        memberGet(userId); // Refresh the list after deleting
+        memberGet(userId);
         Toast.fire({
           icon: "success",
           title: "Delete successfully"

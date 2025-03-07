@@ -21,9 +21,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
   const [bio, setBio] = useState(user.bio || "");
 
 
-  // useEffect = (() => {  }, [user])
-
-
+  
   // Handle Update Logic
   const handleUpdate = (id) => {
     const data = {
@@ -41,7 +39,6 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
       .then((res) => {
         console.log("Updated successfully", res.data);
 
-        // Ensure the UI updates by resetting state
         setFullName(res.data.fullName);
         setEmail(res.data.email);
         setPhoneNumber(res.data.phoneNumber);
@@ -54,7 +51,7 @@ const MemberCard = ({ user, onDelete, onUpdate }) => {
           icon: "success",
           title: "update successfully"
         });
-        // Trigger the parent to refresh the list
+        
         if (onUpdate) {
           onUpdate();
           window.location.reload();

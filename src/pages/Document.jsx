@@ -40,7 +40,7 @@ const Document = () => {
         formData.append('documents', selectedFile);
 
         setIsUploading(true);  // Set uploading state to true
-        instance.post('/documents', formData, {
+        instance.post('/user/document/upload', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
@@ -53,36 +53,51 @@ const Document = () => {
             }
         })
             .then((res) => {
-                setUrl(res.data.document_url);  // Set URL after upload
+                setUrl(res.data.document_url);
             })
             .catch((err) => {
                 console.error(err);
-                setIsUploading(false); // Reset uploading state in case of error
+                setIsUploading(false);
             });
     };
 
-    // Trigger pathSaveDatabase when URL is set
+
     useEffect(() => {
         if (url) {
             pathSavaDatabase();
         }
     }, [url]);
 
-    // Save document path to the database
+
     const pathSavaDatabase = () => {
         const data = {
             userId: userId,
-            filename: url,
+            documentPath: url,
             documentName: docName,
         };
-        instance.post('/add', data)
+        instance.post('/user/document/add', data)
             .then((res) => {
                 console.log(res.data);
-                window.location.reload();
-                
+
+                Toast.fire({
+                    icon: "success",
+                    title: "Upload successfully"
+                });
+
+                handleClose();
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000)
+
             })
             .catch((err) => {
                 console.log(err);
+
+                Toast.fire({
+                    icon: "error",
+                    title: "Upload successfully"
+                });
             });
     };
 
@@ -151,7 +166,7 @@ const Document = () => {
             </Box>
 
             <Box>
-                <DocumentCard/>
+                <DocumentCard />
             </Box>
         </Box>
     );
