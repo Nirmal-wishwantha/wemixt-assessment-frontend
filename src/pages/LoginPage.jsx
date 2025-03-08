@@ -8,11 +8,9 @@ import { Toast } from '../common/funtion';
 export default function LoginPage() {
 
 
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const navigate = useNavigate(); // Initialize useNavigate
 
     const login = () => {
         const data = {
