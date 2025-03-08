@@ -3,7 +3,7 @@ import { Card, CardContent, CardMedia, Typography, TextField, Button } from '@mu
 import instance from '../services/AxiosOder';
 
 const EditProfile = () => {
-  const [user, setUser] = useState(null); // Initialize user to null
+  const [user, setUser] = useState(null); 
   const [fullName, setFullName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState('');
@@ -33,7 +33,7 @@ const EditProfile = () => {
       setProfileImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewImage(reader.result); // Preview the image
+        setPreviewImage(reader.result); 
       };
       reader.readAsDataURL(file);
     }
