@@ -165,7 +165,7 @@ export default function DocumentCard() {
                             position: 'absolute',
                             top: 10,
                             right: 10,
-                            backgroundColor: '#f44336',  // red color for close button
+                            backgroundColor: '#f44336', 
                             borderRadius: '50%',
                             padding: 1,
                             '&:hover': {

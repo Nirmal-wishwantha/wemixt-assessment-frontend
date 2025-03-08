@@ -3,6 +3,7 @@ import MemberCard from '../common/component/MemberCard';
 import instance from '../services/AxiosOder';
 import { Toast } from '../common/funtion';
 import { Box } from '@mui/material';
+import {Typography} from '@mui/material';
 
 export default function Members() {
   const [allUser, setAllUser] = useState([]);
@@ -12,7 +13,7 @@ export default function Members() {
     const id = localStorage.getItem('wemixt-id');
     if (id) {
       setUserId(id);
-      memberGet(id); 
+      memberGet(id);
     }
   }, []);
 
@@ -46,11 +47,20 @@ export default function Members() {
 
   return (
     <Box sx={{ display: "flex", flexWrap: 'wrap' }}>
-      {allUser.map((user, index) => (
-        <Box key={index} sx={{ margin: 1 }}>
-          <MemberCard user={user} onDelete={() => deleteUser(user.id)} />
-        </Box>
-      ))}
+
+
+      {allUser.length > 0 ? (
+        allUser.map((user, index) => (
+          <Box key={index} sx={{ margin: 1 }}>
+            <MemberCard user={user} onDelete={() => deleteUser(user.id)} />
+          </Box>
+        ))
+      ) : (
+        <Typography sx={{ textAlign: 'center', mt: 2 }} color="textSecondary">
+          No members
+        </Typography>
+      )}
+
     </Box>
   );
 }
