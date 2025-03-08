@@ -1,16 +1,101 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardMedia, Typography, Box, Button } from "@mui/material";
+import { Card, CardContent, CardMedia, Box, Button, TextField } from "@mui/material";
 import instance from "../../services/AxiosOder";
 import { Toast } from "../funtion";
-import MemberUpdateForm from "./MemberUpadateForm";
+import { useEffect } from "react";
 
-const MemberCard = ({ user ,onDelete}) => {
+// Function to convert ISO date to YYYY-MM-DD format
+const convertToDateOnly = (isoString) => {
+  if (!isoString) return ""; 
+  const date = new Date(isoString);
+  return date.toISOString().split("T")[0]; 
+};
 
+const MemberCard = ({ user, onDelete, onUpdate }) => {
+  const [fullName, setFullName] = useState(user.fullName || "");
+  const [email, setEmail] = useState(user.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || "");
+  const [address, setAddress] = useState(user.address || "");
+  const [dateOfBirth, setDateOfBirth] = useState(convertToDateOnly(user.dateOfBirth) || "");
+  const [gender, setGender] = useState(user.gender || "");
+  const [bio, setBio] = useState(user.bio || "");
+  const [document_url, setUrl] = useState(user.profilePicture || "");
+  const [profileImage, setProfileImage] = useState(null); 
 
-  
-  const handleUpdate = (updatedData) => {
-    console.log(updatedData); 
-    
+  // Handle profile image selection
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+    }
+  };
+
+  // Handle profile image upload
+  const uplrdProfile = () => {
+    const formData = new FormData();
+    formData.append("profilePicture", profileImage);
+
+    instance.post("/members/profilePicture", formData)
+      .then((res) => {
+        setUrl(res.data.document_url);
+        Toast.fire({
+          icon: "success",
+          title: "Profile picture updated successfully",
+        });
+
+        setProfileImage(null);
+      })
+      .catch((err) => {
+        console.log(err);
+        Toast.fire({
+          icon: "error",
+          title: "Failed to upload profile picture",
+        });
+      });
+  };
+
+  // Handle Update Logic
+  const handleUpdate = (id) => {
+    const data = {
+      fullName,
+      email,
+      phoneNumber,
+      address,
+      dateOfBirth,
+      gender,
+      bio,
+      document_url,
+    };
+
+    instance.put(`/members/${id}`, data)
+      .then((res) => {
+        // console.log("Updated successfully", res.data);
+
+        setFullName(res.data.fullName);
+        setEmail(res.data.email);
+        setPhoneNumber(res.data.phoneNumber);
+        setAddress(res.data.address);
+        setDateOfBirth(convertToDateOnly(res.data.dateOfBirth));
+        setGender(res.data.gender);
+        setBio(res.data.bio);
+
+        Toast.fire({
+          icon: "success",
+          title: "Update successful",
+        });
+
+        if (onUpdate) {
+          onUpdate();
+        }
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.error("Update failed", err);
+        Toast.fire({
+          icon: "error",
+          title: "Update failed",
+        });
+      });
   };
 
   return (
@@ -19,33 +104,119 @@ const MemberCard = ({ user ,onDelete}) => {
         component="img"
         height="200"
         width="200"
-        image={user.profilePicture ? `http://localhost:3000/images/${user.profilePicture}` : "/default-profile.png"}
+        image={document_url || user.profilePicture}
         alt="Profile Picture"
         sx={{ objectFit: "cover" }}
       />
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          {user.fullName}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Email:</strong> {user.email}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Phone:</strong> {user.phoneNumber}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Address:</strong> {user.address}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Date of Birth:</strong> {user.dateOfBirth}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Gender:</strong> {user.gender}
-        </Typography>
+
+      {/* Profile image selection */}
+      <Button variant="contained" component="label" sx={{ margin: 2 }}>
+        Change Profile Picture
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          hidden
+        />
+      </Button>
+      {profileImage && (
+        <Button variant="contained" color="primary" onClick={uplrdProfile} sx={{ margin: 2 }}>
+          Upload
+        </Button>
+      )}
+
+      <CardContent sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <TextField
+          value={fullName || ''}
+          onChange={(e) => setFullName(e.target.value)}
+          label="Full Name"
+          sx={{ margin: 2 }}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
+        />
+        <TextField
+          value={email || ''}
+          onChange={(e) => setEmail(e.target.value)}
+          label="Email"
+          sx={{ margin: 2 }}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
+        />
+        <TextField
+          value={phoneNumber || ''}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          label="Phone Number"
+          sx={{ margin: 2 }}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
+        />
+        <TextField
+          value={address || ''}
+          onChange={(e) => setAddress(e.target.value)}
+          label="Address"
+          sx={{ margin: 2 }}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
+        />
+        <TextField
+          value={dateOfBirth || ''}
+          onChange={(e) => setDateOfBirth(e.target.value)}
+          label="Date of Birth"
+          type="date"
+          sx={{ margin: 2 }}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
+        />
+        <TextField
+          value={gender || ''}
+          onChange={(e) => setGender(e.target.value)}
+          label="Gender"
+          sx={{ margin: 2 }}
+          select
+          SelectProps={{
+            native: true,
+          }}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
+        >
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </TextField>
+
         <Box mt={2}>
-          <Typography variant="body2" color="text.secondary">
-            <strong>Bio:</strong> {user.bio}
-          </Typography>
+          <TextField
+            rows={5}
+            multiline
+            value={bio || ''}
+            onChange={(e) => setBio(e.target.value)}
+            label="Bio"
+            sx={{ margin: 2, width: "90%" }}
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+          />
         </Box>
       </CardContent>
 
@@ -53,9 +224,9 @@ const MemberCard = ({ user ,onDelete}) => {
         <Button variant="contained" color="error" onClick={onDelete}>
           Delete
         </Button>
-        
-        <MemberUpdateForm member={user} onUpdate={handleUpdate} />
-        
+        <Button variant="contained" color="primary" onClick={() => handleUpdate(user.id)}>
+          Update
+        </Button>
       </Box>
     </Card>
   );

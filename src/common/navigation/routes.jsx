@@ -1,9 +1,14 @@
 
-import PeopleIcon from '@mui/icons-material/People';
 import Members from '../../pages/Members';
 import MemberForm from '../../pages/MemberForm';
 import Document from '../../pages/Document';
+import EditProfile from '../../pages/EditProfile';
+
+import PeopleIcon from '@mui/icons-material/People';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+
 
 
 const routes = [
@@ -17,7 +22,7 @@ const routes = [
 
     {
         text: "Members Form",
-        icon: <PeopleIcon/>,
+        icon: <AssignmentIcon/>,
         path: '/MembersForm',
         element:<MemberForm/>
     },
@@ -28,6 +33,17 @@ const routes = [
         path: '/Document',
         element:<Document/>
     },
+
+    {
+        text: "Profile Setting",
+        icon: <SettingsIcon/>,
+        path: '/ProfileSetting',
+        element:<EditProfile/>
+    },
+
+   
+
+
 
 
 ]

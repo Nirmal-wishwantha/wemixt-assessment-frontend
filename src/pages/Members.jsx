@@ -2,62 +2,65 @@ import React, { useEffect, useState } from 'react';
 import MemberCard from '../common/component/MemberCard';
 import instance from '../services/AxiosOder';
 import { Toast } from '../common/funtion';
-import { Typography, Box } from '@mui/material';
+import { Box } from '@mui/material';
+import {Typography} from '@mui/material';
 
 export default function Members() {
   const [allUser, setAllUser] = useState([]);
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
-    memberGet();
-  }, [])
+    const id = localStorage.getItem('wemixt-id');
+    if (id) {
+      setUserId(id);
+      memberGet(id);
+    }
+  }, []);
 
-  const memberGet = async () => {
+  const memberGet = async (id) => {
     try {
-      const response = await instance.get('/members/all');
-      // console.log(response.data);
-      
+      const response = await instance.get(`/members/${id}`);
       setAllUser(response.data);
+      // console.log(response.data);
     } catch (err) {
       console.error('Error fetching users:', err);
     }
-  }
+  };
 
   const deleteUser = (id) => {
-    console.log('Deleting user with ID:', id);
     instance.delete(`/members/${id}`)
       .then((res) => {
-
-        window.location.reload();
-        console.log('Delete successful:', res);
+        memberGet(userId);
         Toast.fire({
           icon: "success",
           title: "Delete successfully"
         });
-        
       })
       .catch((err) => {
         console.error('Error deleting user:', err);
-        if (err.response) {
-          Toast.fire({
-            icon: "error",
-            title: `Delete failed: ${err.response.data.message}`
-          });
-        } else {
-          Toast.fire({
-            icon: "error",
-            title: "Delete failed"
-          });
-        }
+        Toast.fire({
+          icon: "error",
+          title: err.response?.data?.message || "Delete failed"
+        });
       });
   };
 
   return (
-    <Box sx={{ display: "flex" ,flexWrap:'wrap'}}>
-      {allUser.map((user, index) => (
-        <Box key={index} sx={{ margin: 2 }}>
-          <MemberCard user={user} onDelete={() => deleteUser(user.id)} />
-        </Box>
-      ))}
+    <Box sx={{ display: "flex", flexWrap: 'wrap' }}>
+
+
+      {allUser.length > 0 ? (
+        allUser.map((user, index) => (
+          <Box key={index} sx={{ margin: 1 }}>
+            <MemberCard user={user} onDelete={() => deleteUser(user.id)} />
+          </Box>
+        ))
+      ) : (
+        <Typography sx={{ textAlign: 'center', mt: 2 }} color="textSecondary">
+          No members
+        </Typography>
+      )}
+
     </Box>
-  )
+  );
 }
